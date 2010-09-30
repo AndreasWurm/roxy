@@ -3,15 +3,17 @@ module Roxy
   # The very simple proxy class that provides a basic pass-through
   # mechanism between the proxy owner and the proxy target.
   class Proxy
-    
-    alias :proxy_instance_eval :instance_eval
-    alias :proxy_extend :extend
-    
-    # Make sure the proxy is as dumb as it can be.
-    # Blatanly taken from Jim Wierich's BlankSlate post:
-    # http://onestepback.org/index.cgi/Tech/Ruby/BlankSlate.rdoc
-    instance_methods.each { |m| undef_method m unless m =~ /(^__|^proxy_)/ }
-    
+
+    silence_warnings do
+      alias :proxy_instance_eval :instance_eval
+      alias :proxy_extend :extend
+
+      # Make sure the proxy is as dumb as it can be.
+      # Blatanly taken from Jim Wierich's BlankSlate post:
+      # http://onestepback.org/index.cgi/Tech/Ruby/BlankSlate.rdoc
+      instance_methods.each { |m| undef_method m unless m =~ /(^__|^proxy_)/ }
+    end
+
     def initialize(owner, options, args, &block)
       @owner = owner
       @target = options[:to]
